@@ -9,68 +9,68 @@ const user = require("../models/Users");
 const verifyOtp = require("../models/verify");
 
 app.get('/register', (req, res) => {
-    res.render('verifyEmail',{Email : "",errorMessage:""});
+    res.render('verifyEmail', { Email: "", errorMessage: "" });
 });
 
 app.post('/register', async (req, res) => {
     try {
-        if(req.body.password){
+        if (req.body.password) {
             const newUser = new user({
                 Email: req.body.email,
                 Password: req.body.password,
                 CompanyName: req.body.companyName,
                 ContactPerson: req.body.contactPerson,
                 MobileNumber: req.body.mobileNumber,
-                Roal : "Customer",
+                Roal: "Customer",
             });
-            
+
             // Save the user to the database
             const savedUser = await newUser.save();
-            
+
             res.redirect("./login");
-        }else if(req.body.email  && req.body.otp){
-            user.findOne({Email : { $regex: new RegExp( req.body.email , 'i') }  })
-            .then((data)=>{
-                if(data){
-                    
-                    res.render("verifyEmail",{Email : "" , errorMessage:"Email is allredy in use"});
-                
-                }else{
+        } else if (req.body.email && req.body.otp) {
+            user.findOne({ Email: { $regex: new RegExp(req.body.email, 'i') } })
+                .then((data) => {
+                    if (data) {
 
-                    verifyOtp.findOne({Email : req.body.email,otp : req.body.otp})
-                    .then((data)=>{
+                        res.render("verifyEmail", { Email: "", errorMessage: "Email is allredy in use" });
 
-                        if(data){
-                            console.log(data);
-                            console.log(req.body.email);
-                            
-                            const otpCreationTime = moment(data.createdAt);
-                            const currentTime = moment();
-                            const differenceInMinutes = currentTime.diff(otpCreationTime, 'minutes');
-                            
-                            if (differenceInMinutes <= 2) {
-                                if(data.otp == req.body.otp){
-                                    verifyOtp.findOneAndDelete(data).then((data)=>{
-                                        res.render("register",{Email : data.Email});
-                                    });
-                                }else{
-                                    res.render("verifyEmail",{Email : req.body.email , errorMessage:"Invalid email or OTP"});
-                                }
-                            }else{
-                                verifyOtp.findOneAndDelete(data).then((data)=>{
+                    } else {
+
+                        verifyOtp.findOne({ Email: req.body.email, otp: req.body.otp })
+                            .then((data) => {
+
+                                if (data) {
                                     console.log(data);
-                                    res.render("verifyEmail",{Email : req.body.email , errorMessage:"Your OTP is expired"});
-                                });
-                            }
-        
-                        }else{
+                                    console.log(req.body.email);
 
-                            res.render("verifyEmail",{Email : req.body.email , errorMessage:"Invalid email or otp"});
-                        
-                        }
-                    });
-                }
-            })
+                                    const otpCreationTime = moment(data.createdAt);
+                                    const currentTime = moment();
+                                    const differenceInMinutes = currentTime.diff(otpCreationTime, 'minutes');
+
+                                    if (differenceInMinutes <= 2) {
+                                        if (data.otp == req.body.otp) {
+                                            verifyOtp.findOneAndDelete(data).then((data) => {
+                                                res.render("register", { Email: data.Email });
+                                            });
+                                        } else {
+                                            res.render("verifyEmail", { Email: req.body.email, errorMessage: "Invalid email or OTP" });
+                                        }
+                                    } else {
+                                        verifyOtp.findOneAndDelete(data).then((data) => {
+                                            console.log(data);
+                                            res.render("verifyEmail", { Email: req.body.email, errorMessage: "Your OTP is expired" });
+                                        });
+                                    }
+
+                                } else {
+
+                                    res.render("verifyEmail", { Email: req.body.email, errorMessage: "Invalid email or otp" });
+
+                                }
+                            });
+                    }
+                })
         }
 
     } catch (error) {
@@ -93,12 +93,12 @@ app.post("/login", (req, res) => {
             } else {
                 req.data = data;
                 // res.redirect("/Company/companyList");
-                
-                const t =  jwt.sign({data : data },"RKM",{expiresIn : "1h"});
-                res.cookie("BHC",t);
+
+                const t = jwt.sign({ data: data }, "RKM", { expiresIn: "1h" });
+                res.cookie("BHC", t);
                 res.redirect("/Company/companyList");
 
-            
+
             }
 
         })
@@ -109,11 +109,11 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-    res.cookie("BHC",null);
+    res.cookie("BHC", null);
     res.redirect("/user/login")
 });
 
-app.get("/sendOTPForregister",(req,res)=>{
+app.get("/sendOTPForregister", (req, res) => {
 
     var Email = req.query.email;
 
@@ -122,21 +122,27 @@ app.get("/sendOTPForregister",(req,res)=>{
         charset: 'numeric',
     });
 
-    const v = new verifyOtp({Email:Email,otp:otp});
+    const v = new verifyOtp(
+        {
+            Email: Email, otp: otp
+        }
+    );
+    console.log("hii");
+    v.save().then(async (data) => {
+        
+        console.log(data); console.log("hii");
 
-    v.save().then(async (data)=>{
-        console.log(data);
-        await sendEmail(data.Email,'Verify Your Email',
-                        'OTP For Verify Your Email : - '+data.otp+' \n\nThis otp expired in 2 minutes');
+        await sendEmail(data.Email, 'Verify Your Email',
+            'OTP For Verify Your Email : - ' + data.otp + ' \n\nThis otp expired in 2 minutes');
         res.send("otp sent");
-    });  
+    });
 
 });
 
 
-async function sendEmail(email,sub,msg) {
+async function sendEmail(email, sub, msg) {
     try {
-        console.log("email 1",email);
+        console.log("email 1", email);
         // Create a Nodemailer transporter
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -145,7 +151,7 @@ async function sendEmail(email,sub,msg) {
                 pass: 'xctj naln sjnj gjsv',  // replace with your Gmail password
             },
         });
-        console.log("email 2",email);
+        console.log("email 2", email);
         // Email content
         const mailOptions = {
             from: 'mazzking666@gmail.com',  // replace with your Gmail email address
@@ -155,9 +161,9 @@ async function sendEmail(email,sub,msg) {
         };
 
         // Send email
-        console.log("email 3",email);
-        await transporter.sendMail(mailOptions); 
-        console.log("email 4",email);
+        console.log("email 3", email);
+        await transporter.sendMail(mailOptions);
+        console.log("email 4", email);
         console.log('Email sent successfully');
     } catch (error) {
         console.error('Error sending email:', error);

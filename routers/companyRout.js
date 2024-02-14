@@ -4,7 +4,7 @@ const app = express();
 const moment = require('moment-timezone');
 const nodemailer = require('nodemailer');
 
-const Indicator = require('../models/indicators');  
+const Indicator = require('../models/indicators');
 const Rating = require('../models/ratings');
 
 app.get("/companyList", async (req, res) => {
@@ -28,7 +28,7 @@ app.get("/companyList", async (req, res) => {
     }
 
     try {
-        
+
         if (req.data.Roal === "Admin" || req.data.Roal === "Team member") {
             if (req.query.str != null) {
                 var cn = req.query.str;
@@ -36,7 +36,7 @@ app.get("/companyList", async (req, res) => {
                 cn = cn.replace(/^\s+|\s+$/g, "");
 
 
-                const companies = await Rating.find({ CompanyName: { $regex: cn, $options: 'i' } }).sort({ timestamps: 1 }).sort({companyName:1});
+                const companies = await Rating.find({ CompanyName: { $regex: cn, $options: 'i' } }).sort({ timestamps: 1 }).sort({ companyName: 1 });
                 var overallScore = 0;
                 var i = 0;
 
@@ -86,19 +86,19 @@ app.get("/companyList", async (req, res) => {
     }
 });
 
-app.get("/addRating",async (req,res)=>{
-    const indicators = await Indicator.find().sort({area : 1});
+app.get("/addRating", async (req, res) => {
+    const indicators = await Indicator.find().sort({ area: 1 });
     res.render('AddRating', { indicators: indicators });
 });
 
 app.post('/submit-ratings', async (req, res) => {
-    
+
 
     const transformedData = [];
 
     // Extract the company name
     const companyName = req.data.CompanyName;
-    const indicators = await Indicator.find().sort({area : 1});
+    const indicators = await Indicator.find().sort({ area: 1 });
     // Loop through the indicatorsData array and create the desired structure
     indicators.forEach((item, index) => {
         const area = item.area;
@@ -123,14 +123,14 @@ app.post('/submit-ratings', async (req, res) => {
         CompanyName: companyName,
         Data: transformedData,
     };
-    
+
 
     try {
         const data = new Rating(finalData);
-        data.save().then((savedata)=>{
-           
-            sendEmail(req.data.Email,req.data.CompanyName,savedata._id);
-            res.redirect('/detail/'+savedata._id);
+        data.save().then((savedata) => {
+
+            sendEmail(req.data.Email, req.data.CompanyName, savedata._id);
+            res.redirect('/detail/' + savedata._id);
         });
     } catch (err) {
         console.log(err);
@@ -140,7 +140,7 @@ app.post('/submit-ratings', async (req, res) => {
 
 });
 
-async function sendEmail(email,companyName,id) {
+async function sendEmail(email, companyName, id) {
     try {
         // Create a Nodemailer transporter
         const transporter = nodemailer.createTransport({
@@ -150,17 +150,17 @@ async function sendEmail(email,companyName,id) {
                 pass: 'xctj naln sjnj gjsv',  // replace with your Gmail password
             },
         });
-        
+
         // Email content
         const mailOptions = {
             from: 'mazzking666@gmail.com',  // replace with your Gmail email address
             to: email,  // replace with the recipient's email address
             subject: 'New Ratings Submitted',
-            text: `New ratings have been submitted for ${companyName}.\n For details :- https://business-health.cyclic.app/detail/${id}`,
+            text: `New ratings have been submitted for ${companyName}.\n For details :- https://https://business-health-clone.cyclic.app/detail/${id}`,
         };
 
         // Send email
-        await transporter.sendMail(mailOptions); 
+        await transporter.sendMail(mailOptions);
         console.log('Email sent successfully');
     } catch (error) {
         console.error('Error sending email:', error);

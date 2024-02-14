@@ -34,6 +34,6 @@ app.use((req, res, next) => {
 app.use(allRout);
 
 app.listen(port, () => {
-    console.log(`Server is running on https://business-health.cyclic.app/`);
+    console.log(`Server is running on https://https://business-health-clone.cyclic.app/`);
     console.log(`Server is running on http://localhost:7485`);
 });

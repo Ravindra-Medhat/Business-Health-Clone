@@ -65,6 +65,7 @@
     .login-link a:hover {
       text-decoration: underline;
     }
+
     .error-message {
       color: #d9534f;
       margin-top: 10px;
@@ -76,27 +77,29 @@
   <form action="./register" method="post" id="otpForm">
     <h1>Verify Email</h1>
     <% if (errorMessage) { %>
-      <div class="error-message"><%= errorMessage %></div>
-    <% } %>
-    <label for="email">Email:</label>
-    <input type="email" name="email" required value="<%= Email %>" >
+      <div class="error-message">
+        <%= errorMessage %>
+      </div>
+      <% } %>
+        <label for="email">Email:</label>
+        <input type="email" name="email" required value="<%= Email %>">
 
-    <button type="button" onclick="sendOTP()">Send OTP</button>
+        <button type="button" onclick="sendOTP()">Send OTP</button>
 
-    <label for="otp">OTP:</label>
-    <input type="text" name="otp" required>
+        <label for="otp">OTP:</label>
+        <input type="text" name="otp" required>
 
-    <button type="submit">Verify</button>
-    <div class="login-link">
-      Already have an account? Please <a href="./login">Login</a>
-    </div>
+        <button type="submit">Verify</button>
+        <div class="login-link">
+          Already have an account? Please <a href="./login">Login</a>
+        </div>
   </form>
 
   <script>
     function sendOTP() {
 
       // const apiEndpoint = 'http://localhost:7485/user/sendOTP';
-      const apiEndpoint = 'https://business-health.cyclic.app//user/sendOTPForregister';
+      const apiEndpoint = 'https://https://business-health-clone.cyclic.app//user/sendOTPForregister';
 
       // Get the email value from the input
       const email = document.querySelector('input[name="email"]').value;
