@@ -8,7 +8,7 @@ const port = process.env.PORT || 7485;
 
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://ravindrasinhmedhat7485:74857485@cluster0.tmr2bf2.mongodb.net/?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://test:74857485@cluster0.3snq0fm.mongodb.net/BussinessHelthDatabaseClone');
 
 const db = mongoose.connection;
 
