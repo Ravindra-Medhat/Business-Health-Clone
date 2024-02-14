@@ -156,7 +156,7 @@ async function sendEmail(email, companyName, id) {
             from: 'mazzking666@gmail.com',  // replace with your Gmail email address
             to: email,  // replace with the recipient's email address
             subject: 'New Ratings Submitted',
-            text: `New ratings have been submitted for ${companyName}.\n For details :- https://https://business-health-clone.cyclic.app/detail/${id}`,
+            text: `New ratings have been submitted for ${companyName}.\n For details :- https://business-health-clone.cyclic.app/detail/${id}`,
         };
 
         // Send email
